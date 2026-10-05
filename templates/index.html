@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fake News Detection Platform</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="main-container">
+        <!-- Main Application Section -->
+        <div class="app-section">
+            <div class="header">
+                <h1>FAKE NEWS DETECTION PLATFORM</h1>
+                <h3>Using NLP</h3>
+                <p>Detect whether news appears fake or real.</p>
+            </div>
+            
+            <form method="POST">
+                <textarea name="news_text" rows="6" placeholder="Enter or paste news here..." required>{{ user_input }}</textarea>
+                <button type="submit">CHECK NEWS</button>
+            </form>
+            
+            <hr>
+
+            {% if prediction %}
+            <div class="result-section">
+                <p class="label">Prediction:</p>
+                <h2 class="prediction-text {% if prediction == 'REAL NEWS' %}real{% else %}fake{% endif %}">{{ prediction }}</h2>
+                
+                <p class="label">Model Confidence:</p>
+                <h2 class="confidence-text">{{ confidence }}%</h2>
+                
+                <p class="label">Resource Status:</p>
+                <h3 class="resource-text">{{ resource_status }}</h3>
+                
+                {% if related_sources %}
+                <div class="sources-list">
+                    <p class="label">Related Sources:</p>
+                    <ul>
+                        {% for article in related_sources %}
+                        <li>
+                            <a href="{{ article.url }}" target="_blank">{{ article.title }}</a> 
+                            <br><small>Source: {{ article.source.name }}</small>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                {% endif %}
+            </div>
+            {% endif %}
+
+            <div class="disclaimer">
+                <strong>Disclaimer:</strong> This project provides an ML-based prediction based on patterns learned from its training dataset. It is not a professional fact-checking system and should not be considered a definitive determination of whether a news claim is true or false.
+            </div>
+        </div>
+
+        <!-- Live News Section -->
+        <div class="sidebar">
+            <h2>Latest News</h2>
+            <hr>
+            {% if latest_news %}
+                {% for news in latest_news %}
+                <div class="news-item">
+                    <h4>{{ news.title }}</h4>
+                    <p class="news-meta">Source: {{ news.source.name }} | {{ news.publishedAt[:10] }}</p>
+                    <a href="{{ news.url }}" target="_blank" class="read-more">Read Article &rarr;</a>
+                </div>
+                {% endfor %}
+            {% else %}
+                <p>No latest news available. API limit reached or offline.</p>
+            {% endif %}
+        </div>
+    </div>
+</body>
+</html>
